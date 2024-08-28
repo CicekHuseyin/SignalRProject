@@ -1,0 +1,28 @@
+Asp.Net Web Application(MVC) ve Api projeleri açtık.
+Api projesini başlangıç olarak başlatıp paketlerini yüklüyorum.
+-efcore,efcore.design,efcore.tools,efcore.sql
+-Models klasörü oluştur. Entity ve Contexleri tanımla.(User,Room,Context).cs
+-Hubs klasörü oluştur. Class ı yaz doldur.(MyHub.cs)
+-Startup css e configurasyonları ekle.
+
+services.AddDbContext<Context>();
+services.AddCors();//api yı açmamız için kullanılır.
+services.AddSignalR();
+
+
+
+app.UseRouting();//Bunun altına bu yok
+            app.UseCors(x => x
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+            .SetIsOriginAllowed(orign => true)
+            );
+
+app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<MyHub>("/MyHub");//Sadece bu 
+            });
+-Views/Home/index.cshtml içine kodları yazdık.
+Önce api sonrasignal r ı çalıştırıp denedim.
