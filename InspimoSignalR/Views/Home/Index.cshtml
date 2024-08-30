@@ -19,10 +19,48 @@
                     console.log(name);
                     $("#nameslist").append(`<li class="list-group-item">${name}</li>`);
                 });
+                connection.on("ReceiveClientCount", (clientCount) => {
+                    $("#clientCount").text(clientCount);
+                });
+                connection.on("ReciveName", (names) => {
+                    $("#namesList").empty();
+                    names.forEach((item, index) => {
+                        $("#namesList").append(`<li class="list-group-item">${name}</li>`);
+                    });
+                });
+                $("#btnroomsave").click(() => {
+                    let name = $("#txtname").val();
+                    let roomName = $("input[type=radio]:checked").val();
+                    if (roomName == null) {
+                        alert("Lütfen Şehir Seçiniz.");
+                        return;
+                    }
+                    connection.invoke("SendNameByGroup", name, roomName);
+                    //metodun ismine erişim sağlıyorum.(invoke)
+                });
+                connection.on("RecieveMessageByGroup", (name, roomID) => {
+                    //metodun içerdeki ismine erişim sağlıyorum.(on)
+                    let listName;
+                    if (roomID == 1)
+                        listName = "ankaraRoomList";
+                    else
+                        listName = "bursaRoomList";
+
+                    $(`#${listName}`).append(`<li class="list-group-item">${name}</li>`);
+                });
+                $("input[type=radio]").change(() => {
+                    let value = $(`input[type=radio]:checked`).val();
+                    if (value == "Ankara") {
+                        connection.invoke("AddToGroup", value);
+                        connection.invoke("RemoveToGroup", "Bursa");
+                    }
+                    else {
+                        connection.invoke("AddToGroup", value);
+                        connection.invoke("RemoveToGroup", "Ankara");
+                    }
+                });
             });
-        })
-
-
+        });
     </script>
 }
 
@@ -38,13 +76,35 @@
                 Client Sayısı: <strong id="clientCount"></strong>
             </div>
             <div class="clearfix">
-
             </div>
         </div>
     </div>
     <div class="col-md-8 offset-2">
         <ul class="list-group" id="nameslist">
-
         </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8 offset-2">
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="RoomGroup" value="Ankara" />
+            <label class="form-check-label">Ankara Odası</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="RoomGroup" value="Bursa" />
+            <label class="form-check-label">Bursa Odası</label>
+        </div>
+    </div>
+    <div class="col-md-8 offset-2">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Ankara Odası</h2>
+                <ul class="list-group" id="ankaraRoomList"></ul>
+            </div>
+            <div class="col-md-6">
+                <h2>Bursa Odası</h2>
+                <ul class="list-group" id="bursaRoomList"></ul>
+            </div>
+        </div>
     </div>
 </div>
